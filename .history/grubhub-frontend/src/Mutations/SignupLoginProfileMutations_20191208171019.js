@@ -65,7 +65,7 @@ const ownerLoginMutation = gql`
 mutation ownerLogin(
     $restaurantEmailId: String!,
     $restaurantPassword: String!) {
-    ownerLogin(
+    login(
         restaurantEmailId: $restaurantEmailId,
         restaurantPassword: $restaurantPassword) {
         isValidUser,

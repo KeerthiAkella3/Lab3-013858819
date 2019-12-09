@@ -1,9 +1,5 @@
 import { gql } from 'apollo-boost';
-// buyerName: "",
-// buyerEmailId: "",
-// buyerPassword: "",
-// buyerPhone: "",
-// buyerAddress: 
+
 const buyerSignupMutation = gql`
 mutation buyerSignup(
     $buyerEmailId: String!,
@@ -19,12 +15,7 @@ mutation buyerSignup(
     }
 }
 `;
-// restaurantEmailId: "",
-// restaurantPassword: "",
-// restaurantName: "",
-// restaurantPhone: "",
-// restaurantCuisine: "",
-// restaurantAddress: "",
+
 const ownerSignupMutation = gql`
 mutation ownerSignup(
     $restaurantEmailId: String!,
@@ -54,6 +45,7 @@ mutation buyerLogin(
         buyerPassword: $buyerPassword,
         ) {
         isValidUser,
+        isValidUser,
         userId,
         name,
         email
@@ -72,7 +64,6 @@ mutation ownerLogin(
         userId,
         name,
         email
-
     }
 }
 `;
@@ -121,4 +112,4 @@ mutation ownerUpdateProfile(
     }
 `;
 
-export { buyerSignupMutation, buyerLoginMutation, buyerUpdateProfileMutation, ownerLoginMutation, ownerSignupMutation, ownerUpdateProfileMutation }
+export { buyerSignupMutation, buyerLoginMutation, buyerUpdateProfileMutation, ownerLoginMutation, ownerSignupMutation, ownerUpdateProfileMutation };

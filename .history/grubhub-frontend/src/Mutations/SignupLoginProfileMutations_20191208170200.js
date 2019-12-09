@@ -54,9 +54,10 @@ mutation buyerLogin(
         buyerPassword: $buyerPassword,
         ) {
         isValidUser,
-        userId,
-        name,
-        email
+        cookie1,
+        cookie2,
+        cookie3,
+        cookie4
     }
 }
 `;
@@ -65,14 +66,14 @@ const ownerLoginMutation = gql`
 mutation ownerLogin(
     $restaurantEmailId: String!,
     $restaurantPassword: String!) {
-    ownerLogin(
+    login(
         restaurantEmailId: $restaurantEmailId,
         restaurantPassword: $restaurantPassword) {
         isValidUser,
-        userId,
-        name,
-        email
-
+        cookie1,
+        cookie2,
+        cookie3,
+        cookie4
     }
 }
 `;
@@ -121,4 +122,4 @@ mutation ownerUpdateProfile(
     }
 `;
 
-export { buyerSignupMutation, buyerLoginMutation, buyerUpdateProfileMutation, ownerLoginMutation, ownerSignupMutation, ownerUpdateProfileMutation }
+export { buyerSignupMutation, buyerLoginMutation, buyerUpdateProfileMutation, ownerLoginMutation, ownerSignupMutation, ownerUpdateProfileMutation };
