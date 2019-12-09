@@ -457,12 +457,11 @@ const Mutation = new GraphQLObjectType({
                         }
                         else {
                             if (user) {
-                                UserModel.findOneAndUpdate ({"buyerEmailId": args.buyerEmailId},
-                                {$set:{
+                                var user = new UserModel({
                                     buyerName: args.buyerName,
                                     buyerPhone: args.buyerPhone,
                                     buyerAddress: args.buyerAddress,
-                                }});
+                                });
                                 console.log('Buyer saving..');
                                 user.save().then((doc) => {
                                     console.log("Buyer saved successfully.", doc);

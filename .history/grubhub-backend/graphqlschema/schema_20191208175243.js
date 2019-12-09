@@ -22,21 +22,6 @@ const buyerSignupResult = new GraphQLObjectType({
     })
 });
 
-const buyerUpdateResult = new GraphQLObjectType({
-    name: 'buyerUpdateResult',
-    fields: () => ({
-        responseMessage: { type: GraphQLString },
-        isUpdate: { type: GraphQLString }
-    })
-});
-
-const ownerUpdateResult = new GraphQLObjectType({
-    name: 'ownerUpdateResult',
-    fields: () => ({
-        responseMessage: { type: GraphQLString }
-    })
-});
-
 const ownerSignupResult = new GraphQLObjectType({
     name: 'ownerSignupResult',
     fields: () => ({
@@ -294,8 +279,7 @@ const Mutation = new GraphQLObjectType({
                         isValidUser: false,
                         userId: null,
                         name: null,
-                        email: null
-                    };
+                        email: null                    };
                     await RetaurantModel.findOne({
                         "restaurantEmailId": args.restaurantEmailId,
                         "restaurantPassword": sha1(args.restaurantPassword)
@@ -403,7 +387,7 @@ const Mutation = new GraphQLObjectType({
                         }
                         else {
                             if (user) {
-
+                                
                                 var user = new RetaurantModel({
                                     restaurantName: args.restaurantName,
                                     restaurantPhone: args.restaurantPhone,
@@ -416,7 +400,7 @@ const Mutation = new GraphQLObjectType({
                                     console.log('EOF');
                                     var resultData = {
                                         responseMessage: 'Owner Successfully Added!',
-                                        isUpdate: true
+                                        isUpdate:true
                                     }
                                     resolve(resultData);
                                 });
@@ -448,7 +432,7 @@ const Mutation = new GraphQLObjectType({
 
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
-                    console.log("Inside buyer update Mutation");
+                    console.log("Inside BuyerSignup Mutation");
                     await UserModel.findOne({
                         "buyerEmailId": args.buyerEmailId
                     }, (err, user) => {
@@ -456,19 +440,18 @@ const Mutation = new GraphQLObjectType({
                             console.log("Error while querying user info:", err);
                         }
                         else {
-                            if (user) {
-                                UserModel.findOneAndUpdate ({"buyerEmailId": args.buyerEmailId},
-                                {$set:{
+                            if (user) 
+                                var user = new UserModel({
                                     buyerName: args.buyerName,
                                     buyerPhone: args.buyerPhone,
                                     buyerAddress: args.buyerAddress,
-                                }});
+                                });
                                 console.log('Buyer saving..');
                                 user.save().then((doc) => {
                                     console.log("Buyer saved successfully.", doc);
                                     console.log('EOF');
                                     var resultData = {
-                                        responseMessage: 'Buyer Successfully Updated!',
+                                        responseMessage: 'Buyer Successfully Added!',
                                         isUpdate: true
                                     }
                                     resolve(resultData);
@@ -479,10 +462,11 @@ const Mutation = new GraphQLObjectType({
                         }
                     });
                 });
-            },
+            }
+        },
+        
 
 
-        }
 
     })
 });

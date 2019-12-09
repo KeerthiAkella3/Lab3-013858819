@@ -76,7 +76,7 @@ export class BuyerProfilePage extends Component {
                 console.log(res);
         
               
-                if (!res.data.buyerUpdateProfile.responseMessage) {
+                if (!res.data.isUpdate) {
                     this.setState({
                         updateDone: false,
                         message: "Update failed"

@@ -22,21 +22,6 @@ const buyerSignupResult = new GraphQLObjectType({
     })
 });
 
-const buyerUpdateResult = new GraphQLObjectType({
-    name: 'buyerUpdateResult',
-    fields: () => ({
-        responseMessage: { type: GraphQLString },
-        isUpdate: { type: GraphQLString }
-    })
-});
-
-const ownerUpdateResult = new GraphQLObjectType({
-    name: 'ownerUpdateResult',
-    fields: () => ({
-        responseMessage: { type: GraphQLString }
-    })
-});
-
 const ownerSignupResult = new GraphQLObjectType({
     name: 'ownerSignupResult',
     fields: () => ({
@@ -294,8 +279,7 @@ const Mutation = new GraphQLObjectType({
                         isValidUser: false,
                         userId: null,
                         name: null,
-                        email: null
-                    };
+                        email: null                    };
                     await RetaurantModel.findOne({
                         "restaurantEmailId": args.restaurantEmailId,
                         "restaurantPassword": sha1(args.restaurantPassword)
@@ -394,7 +378,7 @@ const Mutation = new GraphQLObjectType({
 
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
-                    console.log("Inside owner update Mutation");
+                    console.log("Inside BuyerSignup Mutation");
                     await RetaurantModel.findOne({
                         "restaurantEmailId": args.restaurantEmailId
                     }, (err, user) => {
@@ -403,8 +387,16 @@ const Mutation = new GraphQLObjectType({
                         }
                         else {
                             if (user) {
-
+                                console.log('User Exists!', user);
+                                var resultData = {
+                                    responseMessage: 'User Already exists!'
+                                }
+                                resolve(resultData);
+                            }
+                            else {
                                 var user = new RetaurantModel({
+                                    restaurantEmailId: args.restaurantEmailId,
+                                    restaurantPassword: sha1(args.restaurantPassword),
                                     restaurantName: args.restaurantName,
                                     restaurantPhone: args.restaurantPhone,
                                     restaurantAddress: args.restaurantAddress,
@@ -415,8 +407,7 @@ const Mutation = new GraphQLObjectType({
                                     console.log("owner saved successfully.", doc);
                                     console.log('EOF');
                                     var resultData = {
-                                        responseMessage: 'Owner Successfully Added!',
-                                        isUpdate: true
+                                        responseMessage: 'Owner Successfully Added!'
                                     }
                                     resolve(resultData);
                                 });
@@ -429,60 +420,7 @@ const Mutation = new GraphQLObjectType({
             }
         },
 
-        buyerUpdateProfile: {
-            type: buyerUpdateResult,
-            args: {
-                buyerName: {
-                    type: GraphQLString
-                },
-                buyerEmailId: {
-                    type: GraphQLString
-                },
-                buyerPhone: {
-                    type: GraphQLString
-                },
-                buyerAddress: {
-                    type: GraphQLString
-                }
-            },
 
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Inside buyer update Mutation");
-                    await UserModel.findOne({
-                        "buyerEmailId": args.buyerEmailId
-                    }, (err, user) => {
-                        if (err) {
-                            console.log("Error while querying user info:", err);
-                        }
-                        else {
-                            if (user) {
-                                UserModel.findOneAndUpdate ({"buyerEmailId": args.buyerEmailId},
-                                {$set:{
-                                    buyerName: args.buyerName,
-                                    buyerPhone: args.buyerPhone,
-                                    buyerAddress: args.buyerAddress,
-                                }});
-                                console.log('Buyer saving..');
-                                user.save().then((doc) => {
-                                    console.log("Buyer saved successfully.", doc);
-                                    console.log('EOF');
-                                    var resultData = {
-                                        responseMessage: 'Buyer Successfully Updated!',
-                                        isUpdate: true
-                                    }
-                                    resolve(resultData);
-                                });
-
-                            }
-
-                        }
-                    });
-                });
-            },
-
-
-        }
 
     })
 });

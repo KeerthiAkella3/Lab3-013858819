@@ -79,17 +79,19 @@ mutation ownerLogin(
 
 const buyerUpdateProfileMutation = gql`
 mutation buyerUpdateProfile(
-        $buyerEmailId:String!,
+        $id:String!,
         $buyerName:String!,
         $buyerPhone:String!,
-        $buyerAddress:String!
+        $buyerAddress:String!, 
+        $buyerEmailId: String!
   )
   {
     buyerUpdateProfile(
-        buyerEmailId: $buyerEmailId,
+        id: $id,
         buyerName: $buyerName,
         buyerAddress: $buyerAddress,
-        buyerPhone: $buyerPhone
+        buyerPhone: $buyerPhone,
+        buyerEmailId: $buyerEmailId
         ){
             responseMessage
         }
@@ -98,7 +100,8 @@ mutation buyerUpdateProfile(
 
 const ownerUpdateProfileMutation = gql`
 mutation ownerUpdateProfile(
-        $id:String!
+        $id:String!,
+        $restaurantEmailId:String!,
         $restaurantName:String!,
         $restaurantPhone:String!,
         $restaurantCuisine:String!, 
@@ -110,6 +113,7 @@ mutation ownerUpdateProfile(
         restaurantName: $restaurantName,
         restaurantPhone: $restaurantPhone,
         restaurantCuisine: $restaurantCuisine,
+        restaurantEmailId: $restaurantEmailId, 
         restaurantAddress: $restaurantAddress
         ){
             responseMessage

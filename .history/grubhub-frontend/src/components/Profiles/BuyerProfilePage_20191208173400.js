@@ -7,9 +7,6 @@ import Button from 'react-bootstrap/Button'
 import BuyerNavBar from '../BuyerPages/BuyerNavBar'
 import Card from 'react-bootstrap/Card'
 
-import { graphql } from "react-apollo";
-import { buyerUpdateProfileMutation } from '../../Mutations/SignupLoginProfileMutations.js';
-
 
 /**
  * This is buyer's profile page
@@ -47,58 +44,83 @@ export class BuyerProfilePage extends Component {
 
             console.log(buyerName);
             this.setState({
-                buyerName: buyerName,
+                buyerName: buyerName//,
             });
+
+            axios({
+                method: 'get',
+                url: 'http://localhost:3001/buyerDetails',
+                params: { "buyerId": buyerId },
+                config: { headers: { 'Content-Type': 'application/json' } }
+            })
+                .then((response) => {
+                    if (response.status >= 500) {
+                        throw new Error("Bad response from server");
+                    }
+                    console.log(response);
+                    if (response.data == undefined) {
+                        console.log(response.data.responseMessage);
+                    }
+
+                    let buyerDetails = response.data.buyerDetails;
+                    if (buyerDetails) {
+                        this.setState({
+                            buyerName: buyerDetails.buyerName,
+                            buyerPhone: buyerDetails.buyerPhone,
+                            buyerAddress: buyerDetails.buyerAddress,
+                            buyerEmailId: buyerDetails.buyerEmailId,
+                        });
+                    }
+                }).catch(function (err) {
+                    console.log(err)
+                });
         }
     }
 
     updateProfile = async (event) => {
         event.preventDefault();
         
-        var buyerEmailId = localStorage.getItem("email")
-        var buyerId = localStorage.getItem("userId")
+        var buyerEmailId = localStorage.get("email")
+        var buyerId = localStorage.get("userId")
         console.log("In update profile cookie 1 " + buyerEmailId)
         console.log("In update profile cookie 2 " + buyerId)
         const formData = new FormData(event.target);
         console.log("Data " + formData.get('buyerPhone'))
-        var data = {
-            "buyerEmailId": localStorage.getItem("email"),
-            "buyerName": formData.get('buyerName'),
-            "buyerPhone": formData.get('buyerPhone'),
-            "buyerAddress": formData.get('buyerAddress'),
-        }
-        localStorage.setItem("name",formData.get('buyerName'))
 
-        this.props.mutate({ variables: data })
-            .then(res => {
-                console.log("Status Code : ", res.status);
-                console.log("Response from update Up " + res);
-                console.log(res);
-        
-              
-                if (!res.data.buyerUpdateProfile.responseMessage) {
-                    this.setState({
-                        updateDone: false,
-                        message: "Update failed"
-                    })
+        console.log("Data " + formData.get('buyerName'))
+        await axios({
+            method: 'post',
+            url: 'http://localhost:3001/updateBuyerProfile',
+            data: {
+                "buyerEmailId": buyerEmailId,
+                "buyerName": formData.get('buyerName'),
+                "buyerPhone": formData.get('buyerPhone'),
+                "buyerAddress": formData.get('buyerAddress'),
+                "buyerId": buyerId
+            },
+            config: { headers: { 'Content-Type': 'multipart/form-data' } }
+        })
+            .then((response) => {
+                if (response.status >= 500) {
+                    throw new Error("Bad response from server");
                 }
-                else {
-                    this.setState({
-                        updateDone: true,
-                        message: "update successfully"
-                        
-                    })
+                console.log(response);
+                if (response.data && response.data.updateResult && response.data.affectedRows === 1) {
+                    console.log(response.data.responseMessage);
                 }
-            }).catch(err => {
-                console.log(err);
+                return response.data;
+            })
+            .catch(function (err) {
+                console.log(err)
             });
-
-        }
+            this.setState({
+                updateDone: true,
+            })
+    }
 
     render() {
 
         if (this.state.updateDone === true) {
-            alert("Update successful")
             return <Redirect 
             to={{
                 pathname: '/BuyerHomePage',
@@ -115,14 +137,13 @@ export class BuyerProfilePage extends Component {
                 <Card style={{ width: '28rem' }}>
                 <h4>Your account</h4>
                 <p>Please Enter all the details with the details you want to update</p>
-                <br></br>
                 <Form onSubmit={this.updateProfile}>
                     <Form.Group controlId="formBasicName">
                         <Form.Label>Full Name</Form.Label>
                         <Form.Control type="text" name="buyerName" defaultValue={this.state.buyerName} required readOnly={this.state.readonly} />
                     </Form.Group>
                     <Form.Group controld="formBasicAddress">
-                        <Form.Label>Address</Form.Label>
+                        <Form.Label>buyerAddress</Form.Label>
                         <Form.Control type="text" name="buyerAddress" defaultValue={this.state.buyerAddress} required readOnly={this.state.readonly} />
                     </Form.Group>
 
@@ -130,7 +151,14 @@ export class BuyerProfilePage extends Component {
                         <Form.Label>Phone Number</Form.Label>
                         <Form.Control type="text" name="buyerPhone" defaultValue={this.state.buyerPhone} required readOnly={this.state.readonly} />
                     </Form.Group>
- 
+
+                    <Form.Group controlId="formBasicEmailId">
+                        <Form.Label>E-Mail ID</Form.Label>
+                        <Form.Control type="text" name="buyerPhone" defaultValue={this.state.buyerEmailId} required readOnly={this.state.readonly} />
+                    </Form.Group>
+                    <Form.Group controlId='buyerImage'>
+                    
+                    </Form.Group>
                     <Button variant="primary" type="submit">
                         Update Profile
                      </Button>
@@ -142,5 +170,4 @@ export class BuyerProfilePage extends Component {
     }
 }
 
-BuyerProfilePage = graphql (buyerUpdateProfileMutation) (BuyerProfilePage)
 export default BuyerProfilePage

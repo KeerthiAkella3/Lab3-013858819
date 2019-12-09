@@ -7,9 +7,6 @@ import Button from 'react-bootstrap/Button'
 import BuyerNavBar from '../BuyerPages/BuyerNavBar'
 import Card from 'react-bootstrap/Card'
 
-import { graphql } from "react-apollo";
-import { buyerUpdateProfileMutation } from '../../Mutations/SignupLoginProfileMutations.js';
-
 
 /**
  * This is buyer's profile page
@@ -47,7 +44,7 @@ export class BuyerProfilePage extends Component {
 
             console.log(buyerName);
             this.setState({
-                buyerName: buyerName,
+                buyerName: buyerName//,
             });
         }
     }
@@ -55,8 +52,8 @@ export class BuyerProfilePage extends Component {
     updateProfile = async (event) => {
         event.preventDefault();
         
-        var buyerEmailId = localStorage.getItem("email")
-        var buyerId = localStorage.getItem("userId")
+        var buyerEmailId = localStorage.get("email")
+        var buyerId = localStorage.get("userId")
         console.log("In update profile cookie 1 " + buyerEmailId)
         console.log("In update profile cookie 2 " + buyerId)
         const formData = new FormData(event.target);
@@ -67,38 +64,12 @@ export class BuyerProfilePage extends Component {
             "buyerPhone": formData.get('buyerPhone'),
             "buyerAddress": formData.get('buyerAddress'),
         }
-        localStorage.setItem("name",formData.get('buyerName'))
 
-        this.props.mutate({ variables: data })
-            .then(res => {
-                console.log("Status Code : ", res.status);
-                console.log("Response from update Up " + res);
-                console.log(res);
-        
-              
-                if (!res.data.buyerUpdateProfile.responseMessage) {
-                    this.setState({
-                        updateDone: false,
-                        message: "Update failed"
-                    })
-                }
-                else {
-                    this.setState({
-                        updateDone: true,
-                        message: "update successfully"
-                        
-                    })
-                }
-            }).catch(err => {
-                console.log(err);
-            });
-
-        }
+            }
 
     render() {
 
         if (this.state.updateDone === true) {
-            alert("Update successful")
             return <Redirect 
             to={{
                 pathname: '/BuyerHomePage',
@@ -142,5 +113,4 @@ export class BuyerProfilePage extends Component {
     }
 }
 
-BuyerProfilePage = graphql (buyerUpdateProfileMutation) (BuyerProfilePage)
 export default BuyerProfilePage

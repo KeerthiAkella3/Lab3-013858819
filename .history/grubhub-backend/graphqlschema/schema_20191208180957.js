@@ -457,7 +457,7 @@ const Mutation = new GraphQLObjectType({
                         }
                         else {
                             if (user) {
-                                UserModel.findOneAndUpdate ({"buyerEmailId": args.buyerEmailId},
+                                await UserModel.findOneAndUpdate ({"buyerEmailId": args.buyerEmailId},
                                 {$set:{
                                     buyerName: args.buyerName,
                                     buyerPhone: args.buyerPhone,

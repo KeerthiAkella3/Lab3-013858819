@@ -55,8 +55,8 @@ export class BuyerProfilePage extends Component {
     updateProfile = async (event) => {
         event.preventDefault();
         
-        var buyerEmailId = localStorage.getItem("email")
-        var buyerId = localStorage.getItem("userId")
+        var buyerEmailId = localStorage.get("email")
+        var buyerId = localStorage.get("userId")
         console.log("In update profile cookie 1 " + buyerEmailId)
         console.log("In update profile cookie 2 " + buyerId)
         const formData = new FormData(event.target);
@@ -76,7 +76,7 @@ export class BuyerProfilePage extends Component {
                 console.log(res);
         
               
-                if (!res.data.buyerUpdateProfile.responseMessage) {
+                if (!res.data.updateProfile.isUpdate) {
                     this.setState({
                         updateDone: false,
                         message: "Update failed"
@@ -98,7 +98,6 @@ export class BuyerProfilePage extends Component {
     render() {
 
         if (this.state.updateDone === true) {
-            alert("Update successful")
             return <Redirect 
             to={{
                 pathname: '/BuyerHomePage',
