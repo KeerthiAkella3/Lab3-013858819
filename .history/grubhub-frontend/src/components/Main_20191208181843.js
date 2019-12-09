@@ -42,7 +42,6 @@ class Main extends Component {
         <Route path="/OwnerSignUp" component={OwnerSignUp} />
         <Route path="/OwnerSignIn" component={OwnerSignIn} />
         <Route path='/OwnerHomePage' component={CompOwnerPage}/>
-        <Route path = '/OwnerProfilePage' component = {OwnerProfilePage}/>
         {/* <Route path='/buyerOrdersPage' component={BuyerOrdersPage}/> */}
       </div>
     </Router>

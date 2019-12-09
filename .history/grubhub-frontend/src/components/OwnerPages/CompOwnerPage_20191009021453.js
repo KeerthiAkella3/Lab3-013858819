@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import SideNavInstance from '../Sidebars/SideNavInstance'
 import MenuPage from './MenuPage';
 import OrderPage from './OrderPage';
-import ProfilePage from './../Profiles/OwnerProfilePage';
+import ProfilePage from './ProfilePage';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import cookie from 'react-cookies';
