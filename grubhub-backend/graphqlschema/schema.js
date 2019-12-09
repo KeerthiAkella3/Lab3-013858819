@@ -599,10 +599,10 @@ const Mutation = new GraphQLObjectType({
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
                     console.log("Adding menu Item");
-                    await Restaurant.findOne({ _id: msg.restaurantId }, function (err, restaurant) {
+                    await Restaurant.findOne({ restaurantEmailId: args.restaurantEmailId }, function (err, restaurant) {
                         if (restaurant) {
                             var section = {
-                                "sectionName": msg.sectionName,
+                                "sectionName": args.sectionName,
                                 "items": {}
                             }
                             restaurant.sections.push(section)
