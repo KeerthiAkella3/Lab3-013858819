@@ -473,4 +473,5 @@ export default compose(
     graphql(addMenuItemMutation, {name: 'addMenuItemMutation'}),
  )(MenuPage);
 
-// export default MenuPage 
+
+export default MenuPage 

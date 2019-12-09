@@ -55,7 +55,7 @@ export class MenuPage extends Component {
             restaurantEmailId
         }
         console.log("Getting details of restaurant with ID: " + restaurantEmailId);
-        this.props.getMenuMutation({ variables: data })
+        this.props.mutate({ variables: data })
             .then(response => {
                 console.log("response from grapQL for getMenu")
                 console.log(response);
@@ -223,7 +223,7 @@ export class MenuPage extends Component {
             sectionName: sectionName,
         }
         console.log("Getting details of restaurant with ID: " + restaurantEmailId);
-        this.props.addSectionMutation({ variables: data })
+        this.props.mutate({ variables: data })
             .then(response => {
                 console.log("response from grapQL for getMenu")
                 console.log(response);
@@ -255,7 +255,7 @@ export class MenuPage extends Component {
             itemImg: addItemState.itemSection,
         }
         console.log("Getting details of restaurant with ID: " + restaurantEmailId);
-        this.props.addMenuItemMutation({ variables: data })
+        this.props.mutate({ variables: data })
             .then(response => {
                 console.log("response from grapQL for getMenu")
                 console.log(response);
@@ -268,7 +268,7 @@ export class MenuPage extends Component {
             });
 
         console.log("Getting details of restaurant with ID: " + restaurantEmailId);
-        this.props.getMenuMutation({ variables: data })
+        this.props.mutate({ variables: data })
             .then(response => {
                 console.log("response from grapQL for getMenu")
                 console.log(response);
@@ -466,11 +466,20 @@ export class MenuPage extends Component {
     }
 }
 
+const MenuPageWithMutations = compose(
+    graphql(getMenuMutation, {
+        name: 'getMenuMutation'
+    }),
+    graphql(addSectionMutation, {
+        name: 'addSectionMutation'
+    }),
+    graphql(addMenuItemMutation, {
+        name: 'addMenuItemMutation'
+    })
+)(MenuPage);
 
-export default compose(
-    graphql(getMenuMutation, {name: 'getMenuMutation'}),
-    graphql(addSectionMutation, {name: 'addSectionMutation'}),
-    graphql(addMenuItemMutation, {name: 'addMenuItemMutation'}),
- )(MenuPage);
 
-// export default MenuPage 
+MenuPage = graphql(getMenuMutation)(MenuPage)
+MenuPage = graphql(addSectionMutation)(MenuPage)
+MenuPage = graphql(addMenuItemMutation)(MenuPage)
+export default MenuPage 

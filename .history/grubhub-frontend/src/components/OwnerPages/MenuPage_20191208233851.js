@@ -466,11 +466,20 @@ export class MenuPage extends Component {
     }
 }
 
+const MenuPageWithMutations = compose (
+    graphql(getMenuMutation, {
+        name: 'getMenuMutation'
+    }),
+    graphql(addSectionMutation, {
+        name: 'addSectionMutation'
+    }),
+    graphql(addMenuItemMutation, {
+        name: 'addMenuItemMutation'
+    })
+)(MenuPage);
 
-export default compose(
-    graphql(getMenuMutation, {name: 'getMenuMutation'}),
-    graphql(addSectionMutation, {name: 'addSectionMutation'}),
-    graphql(addMenuItemMutation, {name: 'addMenuItemMutation'}),
- )(MenuPage);
 
-// export default MenuPage 
+MenuPage = graphql(getMenuMutation)(MenuPage)
+MenuPage = graphql(addSectionMutation)(MenuPage)
+MenuPage = graphql(addMenuItemMutation)(MenuPage)
+export default MenuPage 
