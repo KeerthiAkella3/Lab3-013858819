@@ -15,24 +15,6 @@ const {
     GraphQLDate
 } = graphql;
 
-const itemType = new GraphQLObjectType({
-    name: 'itemType',
-    fields: () => ({
-        itemName: {type: GraphQLString},
-        itemDescription: {type: GraphQLString},
-        itemPrice: {type: GraphQLString},
-        itemImg: {type: GraphQLString},
-    })
-})
-
-const sectionType = new GraphQLObjectType({
-    name: 'sectionType',
-    fields : () =>  ({
-        sectionName: { type: GraphQLString },
-        items: { type: new GraphQLList(itemType) },
-    })
-})
-
 const buyerSignupResult = new GraphQLObjectType({
     name: 'buyerSignupResult',
     fields: () => ({
@@ -44,22 +26,8 @@ const getMenuResult = new GraphQLObjectType({
     name: 'getMenuResult',
     fields: () => ({
         responseMessage: { type: GraphQLString },
-        lists:{ type: new GraphQLList(sectionType)},
-        cuisine:{ type: GraphQLString }     
-    })
-});
-
-const addMenuItemResult = new GraphQLObjectType({
-    name: 'addMenuItemResult',
-    fields: () => ({
-        status: { type: GraphQLString},
-    })
-})
-
-const addSectionResult = new GraphQLObjectType({
-    name: 'addSectionItemResult',
-    fields: () => ({
-        status: { type: GraphQLString},
+        lists: { type: GraphQLString },
+        cuisine: { type: GraphQLString }
     })
 })
 
@@ -444,248 +412,129 @@ const Mutation = new GraphQLObjectType({
                         }
                         else {
                             if (user) {
-                                var user = new RestaurantModel({
+                                user = new RestaurantModel({
                                     restaurantName: args.restaurantName,
-                                    restaurantPhone: args.restaurantPhone,
-                                    restaurantAddress: args.restaurantAddress,
+                                        restaurantPhone: args.restaurantPhone,
+                                            restaurantAddress: args.restaurantAddress,
                                     restaurantCuisine: args.restaurantCuisine,
-                                });
-                                console.log('owner saving..');
-                                user.save().then((doc) => {
-                                    console.log("owner saved successfully.", doc);
-                                    console.log('EOF');
-                                    var resultData = {
-                                        status: 200,
-                                    }
-                                    resolve(resultData);
-                                });
-                            }
-                        }
                     });
+                    console.log('owner saving..');
+                        .save().then((doc) => {
+                        console.log("owner saved successfully.", doc);
+                        console.log('EOF');
+                            resultData = {
+                            responseMessage: 'Owner Successfully Added!',
+                            isUpdate: true
+                        }
+                        resolve(resultData);
+                                });
+                
+                            }
+
+            }
+    });
                 });
             }
         },
 
-        buyerUpdateProfile: {
-            type: buyerUpdateResult,
-            args: {
-                buyerName: {
-                    type: GraphQLString
-                },
-                buyerEmailId: {
-                    type: GraphQLString
-                },
-                buyerPhone: {
-                    type: GraphQLString
-                },
-                buyerAddress: {
-                    type: GraphQLString
-                }
+    rUpdateProfile: {
+        type: buyerUpdateResult,
+        : {
+            rName: {
+            type: GraphQLString
+        },
+            rEmailId: {
+            type: GraphQLString
+        },
+            rPhone: {
+            type: GraphQLString
+        },
+            rAddress: {
+            type: GraphQLString
+        }
             },
-
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Inside buyer update Mutation");
-                    await UserModel.findOne({
-                        "buyerEmailId": args.buyerEmailId
-                    }, (err, user) => {
-                        if (err) {
-                            console.log("Error while querying user info:", err);
-                        }
-                        else {
-                            if (user) {
-                                UserModel.findOneAndUpdate ({"buyerEmailId": args.buyerEmailId},
-                                {$set:{
+    
+        lve: (parent, args) => {
+            rn new Promise(async (resolve, reject) => {
+            console.log("Inside buyer update Mutation");
+                t UserModel.findOne({
+                "buyerEmailId": args.buyerEmailId
+                err, user) => {
+                    err) {
+                    console.log("Error while querying user info:", err);
+                }
+                     {
+                        user) {
+                            Model.findOneAndUpdate({ "buyerEmailId": args.buyerEmailId },
+                                
+                                    : {
                                     buyerName: args.buyerName,
                                     buyerPhone: args.buyerPhone,
                                     buyerAddress: args.buyerAddress,
-                                }});
-                                console.log('Buyer saving..');
-                                user.save().then((doc) => {
-                                    console.log("Buyer saved successfully.", doc);
-                                    console.log('EOF');
-                                    var resultData = {
-                                        responseMessage: 'Buyer Successfully Updated!',
-                                        isUpdate: true
-                                    }
-                                    resolve(resultData);
-                                });
-
-                            }
-
-                        }
-                    });
-                });
-            },
-
-
-        },
-
-        addMenuItem: {
-            type: addMenuItemResult,
-            args: {
-                restaurantEmailId: {
-                    type: GraphQLString
-                },
-                sectionName: {
-                    type: GraphQLString
-                },
-                itemName: {
-                    type: GraphQLString
-                },
-                itemImg: {
-                    type: GraphQLString
-                },
-                itemDescription: {
-                    type: GraphQLString
-                },
-                itemPrice: {
-                    type: GraphQLString
-                }
-            },
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Adding menu Item");
-                    await Restaurant.findOne({ restaurantEmailId: args.restaurantEmailId}, function (err, restaurant) {
-                        console.log("okayyyyy")
-                        if (restaurant) {
-                          var item = {
-                            "itemName": args.itemName,
-                            "itemDescription": args.itemDescription,
-                            "itemImg": args.itemImg,
-                            "itemPrice": args.itemPrice,
-                          }
-                    
-                          let sectionIndex = 0;
-                          let sectionsList = restaurant.sections;
-                          for (sectionIndex = 0; sectionIndex < sectionsList.length; sectionIndex++) {
-                              let aSection = sectionsList[sectionIndex];
-                              console.log(aSection)
-                              console.log(aSection.items.length)
-                              if (aSection.sectionName === args.sectionName) {
-                                if (aSection.items === undefined || aSection.items.length === 0|| aSection.items === null || aSection.items === {} || aSection.items.length === undefined) {
-                                  aSection.items = [];
-                                } 
-                                let items = aSection.items;
-                                console.log(items);
-                                items.push(item);
-                              }
-                          }
-                          restaurant.markModified("sections");
-                          var resultData = {
-                              status: "200",
+                                }
+                            });
+                        console.log('Buyer saving..');
+                            .save().then((doc) => {
+                            console.log("Buyer saved successfully.", doc);
+                            console.log('EOF');
+                                resultData = {
+                                responseMessage: 'Buyer Successfully Updated!',
+                                isUpdate: true
                             }
                             resolve(resultData);
-                        }
-                        else {
-                          console.log(err);
-                          console.log("item not added db err")
-                        }
-                      })
-                    })
-            },
-        },
-
-        addSection: {
-            type: addSectionResult,
-            args: {
-                restaurantEmailId: {
-                    type: GraphQLString
-                },
-                sectionName: {
-                    type: GraphQLString
-                },
-            },
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Adding menu Item");
-                    await Restaurant.findOne({ _id: msg.restaurantId }, function (err, restaurant) {
-                        if (restaurant) {
-                            var section = {
-                                "sectionName": msg.sectionName,
-                                "items": {}
-                            }
-                            restaurant.sections.push(section)
-                            restaurant.save()
-                            if (err) {
-                                console.log("unable to insert section into database", err);
-                                let resultData = {
-                                    status: "200",
-                                }
-                                resolve(resultData);
-                            } else {
-                                console.log("section added Successful");
-                                let resultData = {
-                                    status: "500",
-                                }
-                                resolve(resultData);
-                            }
-                        }
-                        else {
-                        console.log(err);
-                        console.log("section not added")
-                        }
-                    })
-                })
-            },
-        },
-
-
-        getMenu: {
-            type: getMenuResult,
-            args: {
-                restaurantEmailId: {
-                    type: GraphQLString
-                },
-            }, 
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Inside get menu restaurants model");
-                    await RestaurantModel.findOne({
-                        "restaurantEmailId": args.restaurantEmailId
-                    }, (err, result) => {
-                        if (err) {
-                            console.log("Error while querying menu info:", err);
-                        }
-                        else {
-                            if (result) {
-                                RestaurantModel.findOne({ "restaurantEmailId": args.restaurantEmailId });
-                                console.log('Buyer saving..');
-                                result.save().then((doc) => {
-                                    console.log("Buyer saved successfully.", doc);
-                                    console.log('EOF');
-                                    var resultData = {
-                                        responseMessage: 'Menu Successfully Updated!',
-                                        lists: result.sections,
-                                        cuisine: result.cuisine,
-
-                                    }
-                                    console.log(resultData);
-                                    resolve(resultData);
                                 });
+                    
                             }
-                        }
-                    });
-                }); 
-            },
+                
+                }
+            });
+        });
+            }
         },
+                
+        ge
+: getMenuResult,
+    
+restaurantEmailId: {
+                    type: GraphQLString
+                },
+},
+    
+         (parent, args) => {
+        rn new Promise(async (resolve, reject) => {
+            ole.log("Inside get menu restaurants model");
+        await RestaurantModel.findOne({
+            "restaurantEmailId": args.restaurantEmailId
+                 result) => {
+            if (err) {
+                console.log("Error while querying menu info:", err);
+                
+                    
+                    result) {
+                    RestaurantModel.findOne({ "restaurantEmailId": args.restaurantEmailId });
+                        ole.log('Buyer saving..');
+                        lt.save().then((doc) => {
+                        console.log("Buyer saved successfully.", doc);
+                            ole.log('EOF');
+                            resultData = {
+                            responseMessage: 'Menu Successfully Updated!',
+                                        lists: result.sections,
+                            cuisine: result.cuisine,
+                        
+                        }
+                        resolve(resultData);
+                    });
+                }
+                        }
+});
+            }); 
+        }
 
-
-        
-
-
-
-
-
-    })
+        },  
+    )}
 });
 
+    
+    
 
-
-
-
-
-module.exports = new GraphQLSchema({
-    query: RootQuery,
-    mutation: Mutation
-});
+    

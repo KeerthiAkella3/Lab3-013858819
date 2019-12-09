@@ -1,6 +1,6 @@
 const graphql = require('graphql');
 var UserModel = require('../models/UserSchema');
-var RestaurantModel = require('./../models/RestaurantSchema');
+var RetaurantModel = require('./../models/RestaurantSchema');
 const sha1 = require('sha1');
 
 const {
@@ -15,53 +15,12 @@ const {
     GraphQLDate
 } = graphql;
 
-const itemType = new GraphQLObjectType({
-    name: 'itemType',
-    fields: () => ({
-        itemName: {type: GraphQLString},
-        itemDescription: {type: GraphQLString},
-        itemPrice: {type: GraphQLString},
-        itemImg: {type: GraphQLString},
-    })
-})
-
-const sectionType = new GraphQLObjectType({
-    name: 'sectionType',
-    fields : () =>  ({
-        sectionName: { type: GraphQLString },
-        items: { type: new GraphQLList(itemType) },
-    })
-})
-
 const buyerSignupResult = new GraphQLObjectType({
     name: 'buyerSignupResult',
     fields: () => ({
         responseMessage: { type: GraphQLString }
     })
 });
-
-const getMenuResult = new GraphQLObjectType({
-    name: 'getMenuResult',
-    fields: () => ({
-        responseMessage: { type: GraphQLString },
-        lists:{ type: new GraphQLList(sectionType)},
-        cuisine:{ type: GraphQLString }     
-    })
-});
-
-const addMenuItemResult = new GraphQLObjectType({
-    name: 'addMenuItemResult',
-    fields: () => ({
-        status: { type: GraphQLString},
-    })
-})
-
-const addSectionResult = new GraphQLObjectType({
-    name: 'addSectionItemResult',
-    fields: () => ({
-        status: { type: GraphQLString},
-    })
-})
 
 const buyerUpdateResult = new GraphQLObjectType({
     name: 'buyerUpdateResult',
@@ -274,7 +233,7 @@ const Mutation = new GraphQLObjectType({
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
                     console.log("Inside BuyerSignup Mutation");
-                    await RestaurantModel.findOne({
+                    await RetaurantModel.findOne({
                         "restaurantEmailId": args.restaurantEmailId
                     }, (err, user) => {
                         if (err) {
@@ -289,7 +248,7 @@ const Mutation = new GraphQLObjectType({
                                 resolve(resultData);
                             }
                             else {
-                                var user = new RestaurantModel({
+                                var user = new RetaurantModel({
                                     restaurantEmailId: args.restaurantEmailId,
                                     restaurantPassword: sha1(args.restaurantPassword),
                                     restaurantName: args.restaurantName,
@@ -337,7 +296,7 @@ const Mutation = new GraphQLObjectType({
                         name: null,
                         email: null
                     };
-                    await RestaurantModel.findOne({
+                    await RetaurantModel.findOne({
                         "restaurantEmailId": args.restaurantEmailId,
                         "restaurantPassword": sha1(args.restaurantPassword)
                     }, (err, user) => {
@@ -436,7 +395,7 @@ const Mutation = new GraphQLObjectType({
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
                     console.log("Inside owner update Mutation");
-                    await RestaurantModel.findOne({
+                    await RetaurantModel.findOne({
                         "restaurantEmailId": args.restaurantEmailId
                     }, (err, user) => {
                         if (err) {
@@ -444,7 +403,8 @@ const Mutation = new GraphQLObjectType({
                         }
                         else {
                             if (user) {
-                                var user = new RestaurantModel({
+
+                                var user = new RetaurantModel({
                                     restaurantName: args.restaurantName,
                                     restaurantPhone: args.restaurantPhone,
                                     restaurantAddress: args.restaurantAddress,
@@ -455,11 +415,14 @@ const Mutation = new GraphQLObjectType({
                                     console.log("owner saved successfully.", doc);
                                     console.log('EOF');
                                     var resultData = {
-                                        status: 200,
+                                        responseMessage: 'Owner Successfully Added!',
+                                        isUpdate: true
                                     }
                                     resolve(resultData);
                                 });
+
                             }
+
                         }
                     });
                 });
@@ -494,12 +457,14 @@ const Mutation = new GraphQLObjectType({
                         }
                         else {
                             if (user) {
-                                UserModel.findOneAndUpdate ({"buyerEmailId": args.buyerEmailId},
-                                {$set:{
-                                    buyerName: args.buyerName,
-                                    buyerPhone: args.buyerPhone,
-                                    buyerAddress: args.buyerAddress,
-                                }});
+                                UserModel.findOneAndUpdate({ "buyerEmailId": args.buyerEmailId },
+                                    {
+                                        $set: {
+                                            buyerName: args.buyerName,
+                                            buyerPhone: args.buyerPhone,
+                                            buyerAddress: args.buyerAddress,
+                                        }
+                                    });
                                 console.log('Buyer saving..');
                                 user.save().then((doc) => {
                                     console.log("Buyer saved successfully.", doc);
@@ -519,171 +484,10 @@ const Mutation = new GraphQLObjectType({
             },
 
 
-        },
-
-        addMenuItem: {
-            type: addMenuItemResult,
-            args: {
-                restaurantEmailId: {
-                    type: GraphQLString
-                },
-                sectionName: {
-                    type: GraphQLString
-                },
-                itemName: {
-                    type: GraphQLString
-                },
-                itemImg: {
-                    type: GraphQLString
-                },
-                itemDescription: {
-                    type: GraphQLString
-                },
-                itemPrice: {
-                    type: GraphQLString
-                }
-            },
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Adding menu Item");
-                    await Restaurant.findOne({ restaurantEmailId: args.restaurantEmailId}, function (err, restaurant) {
-                        console.log("okayyyyy")
-                        if (restaurant) {
-                          var item = {
-                            "itemName": args.itemName,
-                            "itemDescription": args.itemDescription,
-                            "itemImg": args.itemImg,
-                            "itemPrice": args.itemPrice,
-                          }
-                    
-                          let sectionIndex = 0;
-                          let sectionsList = restaurant.sections;
-                          for (sectionIndex = 0; sectionIndex < sectionsList.length; sectionIndex++) {
-                              let aSection = sectionsList[sectionIndex];
-                              console.log(aSection)
-                              console.log(aSection.items.length)
-                              if (aSection.sectionName === args.sectionName) {
-                                if (aSection.items === undefined || aSection.items.length === 0|| aSection.items === null || aSection.items === {} || aSection.items.length === undefined) {
-                                  aSection.items = [];
-                                } 
-                                let items = aSection.items;
-                                console.log(items);
-                                items.push(item);
-                              }
-                          }
-                          restaurant.markModified("sections");
-                          var resultData = {
-                              status: "200",
-                            }
-                            resolve(resultData);
-                        }
-                        else {
-                          console.log(err);
-                          console.log("item not added db err")
-                        }
-                      })
-                    })
-            },
-        },
-
-        addSection: {
-            type: addSectionResult,
-            args: {
-                restaurantEmailId: {
-                    type: GraphQLString
-                },
-                sectionName: {
-                    type: GraphQLString
-                },
-            },
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Adding menu Item");
-                    await Restaurant.findOne({ _id: msg.restaurantId }, function (err, restaurant) {
-                        if (restaurant) {
-                            var section = {
-                                "sectionName": msg.sectionName,
-                                "items": {}
-                            }
-                            restaurant.sections.push(section)
-                            restaurant.save()
-                            if (err) {
-                                console.log("unable to insert section into database", err);
-                                let resultData = {
-                                    status: "200",
-                                }
-                                resolve(resultData);
-                            } else {
-                                console.log("section added Successful");
-                                let resultData = {
-                                    status: "500",
-                                }
-                                resolve(resultData);
-                            }
-                        }
-                        else {
-                        console.log(err);
-                        console.log("section not added")
-                        }
-                    })
-                })
-            },
-        },
-
-
-        getMenu: {
-            type: getMenuResult,
-            args: {
-                restaurantEmailId: {
-                    type: GraphQLString
-                },
-            }, 
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Inside get menu restaurants model");
-                    await RestaurantModel.findOne({
-                        "restaurantEmailId": args.restaurantEmailId
-                    }, (err, result) => {
-                        if (err) {
-                            console.log("Error while querying menu info:", err);
-                        }
-                        else {
-                            if (result) {
-                                RestaurantModel.findOne({ "restaurantEmailId": args.restaurantEmailId });
-                                console.log('Buyer saving..');
-                                result.save().then((doc) => {
-                                    console.log("Buyer saved successfully.", doc);
-                                    console.log('EOF');
-                                    var resultData = {
-                                        responseMessage: 'Menu Successfully Updated!',
-                                        lists: result.sections,
-                                        cuisine: result.cuisine,
-
-                                    }
-                                    console.log(resultData);
-                                    resolve(resultData);
-                                });
-                            }
-                        }
-                    });
-                }); 
-            },
-        },
-
-
-        
-
-
-
-
+        }
 
     })
 });
-
-
-
-
-
 
 module.exports = new GraphQLSchema({
     query: RootQuery,

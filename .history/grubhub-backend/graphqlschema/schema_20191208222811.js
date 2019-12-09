@@ -49,17 +49,10 @@ const getMenuResult = new GraphQLObjectType({
     })
 });
 
-const addMenuItemResult = new GraphQLObjectType({
+const addMenuItem = new GraphQLObjectType({
     name: 'addMenuItemResult',
     fields: () => ({
-        status: { type: GraphQLString},
-    })
-})
-
-const addSectionResult = new GraphQLObjectType({
-    name: 'addSectionItemResult',
-    fields: () => ({
-        status: { type: GraphQLString},
+        status: { type: GraphQLInt},
     })
 })
 
@@ -546,14 +539,14 @@ const Mutation = new GraphQLObjectType({
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
                     console.log("Adding menu Item");
-                    await Restaurant.findOne({ restaurantEmailId: args.restaurantEmailId}, function (err, restaurant) {
+                    await Restaurant.findOne({ _id: msg.restaurantId }, function (err, restaurant) {
                         console.log("okayyyyy")
                         if (restaurant) {
                           var item = {
-                            "itemName": args.itemName,
-                            "itemDescription": args.itemDescription,
-                            "itemImg": args.itemImg,
-                            "itemPrice": args.itemPrice,
+                            "itemName": msg.itemData.itemName,
+                            "itemDescription": msg.itemData.itemDesc,
+                            "itemImg": msg.itemData.itemImage,
+                            "itemPrice": msg.itemData.itemPrice
                           }
                     
                           let sectionIndex = 0;
@@ -562,7 +555,7 @@ const Mutation = new GraphQLObjectType({
                               let aSection = sectionsList[sectionIndex];
                               console.log(aSection)
                               console.log(aSection.items.length)
-                              if (aSection.sectionName === args.sectionName) {
+                              if (aSection.sectionName === sectionName) {
                                 if (aSection.items === undefined || aSection.items.length === 0|| aSection.items === null || aSection.items === {} || aSection.items.length === undefined) {
                                   aSection.items = [];
                                 } 
@@ -572,62 +565,49 @@ const Mutation = new GraphQLObjectType({
                               }
                           }
                           restaurant.markModified("sections");
-                          var resultData = {
-                              status: "200",
+                          restaurant.save(function (err) {
+                            if (!err) {
+                              callback(null, { status: 200, message: "item is added successfully!!" });
+                            } else {
+                              callback(null, { status: 200, message: "item not added!!" });
                             }
-                            resolve(resultData);
+                          });
                         }
                         else {
                           console.log(err);
                           console.log("item not added db err")
                         }
                       })
-                    })
-            },
-        },
-
-        addSection: {
-            type: addSectionResult,
-            args: {
-                restaurantEmailId: {
-                    type: GraphQLString
-                },
-                sectionName: {
-                    type: GraphQLString
-                },
-            },
-            resolve: (parent, args) => {
-                return new Promise(async (resolve, reject) => {
-                    console.log("Adding menu Item");
-                    await Restaurant.findOne({ _id: msg.restaurantId }, function (err, restaurant) {
+                    }
+                    
+                    
+                    
+                    RestaurantModel.findOne({"restaurantEmailId": args.restaurantEmailId},
+                    function (err, restaurant) {
                         if (restaurant) {
-                            var section = {
-                                "sectionName": msg.sectionName,
-                                "items": {}
-                            }
-                            restaurant.sections.push(section)
-                            restaurant.save()
-                            if (err) {
-                                console.log("unable to insert section into database", err);
-                                let resultData = {
-                                    status: "200",
-                                }
-                                resolve(resultData);
-                            } else {
-                                console.log("section added Successful");
-                                let resultData = {
-                                    status: "500",
-                                }
-                                resolve(resultData);
-                            }
-                        }
-                        else {
-                        console.log(err);
-                        console.log("section not added")
+                            var 
                         }
                     })
+                    await RestaurantModel.findOneAndUpdate ({"restaurantEmailId": args.restaurantEmailId},
+                    {$set:{
+                        sectionName: args.sectionName,
+                        itemName: args.itemName,
+                        itemImg: args.itemImg,
+                        itemPrice: args.itemPrice,
+                        itemDescription: args.itemDescription,
+                    }});
+                    console.log('Buyer saving..');
+                    user.save().then((doc) => {
+                        console.log("Added menu Item successfully.", doc);
+                        var resultData = {
+                            responseMessage: 'Buyer Successfully Updated!',
+                            
+                        }
+                        resolve(resultData);
+                    });
                 })
-            },
+            }
+
         },
 
 

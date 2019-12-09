@@ -11,7 +11,7 @@ import cookie from 'react-cookies';
 import MenuSectionAddModal from './MenuSectionAddModal';
 
 import { graphql } from "react-apollo";
-import { getMenuMutation, addMenuItemMutation, addSectionMutation } from '../../Mutations/SectionMenuMutations.js';
+import { getMenuMutation } from '../../Mutations/SectionMenuMutations.js';
 
 
 export class MenuPage extends Component {
@@ -21,6 +21,7 @@ export class MenuPage extends Component {
 
         this.state = {
             sections: [],
+            items: [],
             restaurantDetails: {},
             restaurantId: 1,
             showMenuItemAddModal: false,
@@ -57,13 +58,13 @@ export class MenuPage extends Component {
         console.log("Getting details of restaurant with ID: " + restaurantEmailId);
         this.props.mutate({ variables: data })
             .then(response => {
-                console.log("response from grapQL for getMenu")
-                console.log(response);
-                let sections = response.data.getMenu.lists;
+                console.log("resposne fro mquerygin asdaklsdj")
+                console.log(JSON.parse(response));   
                 this.setState({
                     restaurantId: localStorage.getItem('userId'),
                     restaurantDetails: restaurantDetails,
                     sections: sections,
+                    items: menu,
                 })
             }).catch(error => {
                 console.log(error);
@@ -216,25 +217,25 @@ export class MenuPage extends Component {
     }
 
     saveSectionAddModal = (sectionName) => {
-        console.log("Adding section after sectionAdd Modal is closed: ");
-        var restaurantEmailId = localStorage.getItem('email')
-        var data = {
-            restaurantEmailId: restaurantEmailId,
+        let restaurantId = cookie.load('cookie2');
+        axios.post('http://localhost:3001/restaurantSection', {
+            restaurantId: restaurantId,
             sectionName: sectionName,
-        }
-        console.log("Getting details of restaurant with ID: " + restaurantEmailId);
-        this.props.mutate({ variables: data })
-            .then(response => {
-                console.log("response from grapQL for getMenu")
-                console.log(response);
-                console.log("Successfully added the section");
+        }).then(response => {
+            if (response.status === 200) {
+                console.log('Successfully added the section');
+                // alert('successfully added the section');
                 this.setState({
                     sections: this.state.sections.concat(sectionName),
                     showMenuSectionAddModal: false,
                 })
-            }).catch(error => {
-                console.log(error);
-            });
+            } else {
+                alert('failed to add section');
+                console.log('Failed to add the section');
+            }
+        }).catch(error => {
+            console.log(error);
+        })
     }
 
     closeMenuItemAddModal = () => {
@@ -244,52 +245,112 @@ export class MenuPage extends Component {
     }
 
     saveMenuItemAddModal = (addItemState) => {
-        console.log("Adding section after menuItemAdd Modal is closed: ");
-        var restaurantEmailId = localStorage.getItem('email')
-        var data = {
-            restaurantEmailId: restaurantEmailId,
-            itemName: addItemState.itemName,
-            itemPrice: addItemState.itemDesc,
-            itemDescription: addItemState.itemImage,
-            itemPrice: addItemState.itemPrice,
-            itemImg: addItemState.itemSection,
+        let restaurantId = this.state.restaurantId;
+        let sections = [];
+        let menu = [];
+        debugger;
+        const data = {
+            restaurantId: cookie.load('cookie2'),
+            menuItemName: addItemState.itemName,
+            menuItemDesc: addItemState.itemDesc,
+            menuItemImage: addItemState.itemImage,
+            menuItemPrice: addItemState.itemPrice,
+            menuItemSection: addItemState.itemSection,
         }
-        console.log("Getting details of restaurant with ID: " + restaurantEmailId);
-        this.props.mutate({ variables: data })
+        axios.post('http://localhost:3001/restaurantMenu', data)
             .then(response => {
-                console.log("response from grapQL for getMenu")
-                console.log(response);
-                console.log("Successfully added the section");
+                if (response.status === 200) {
+                    console.log('successfully added menu item to restaurants menu' + response.data.menuItemUniqueId);
+                    console.log(response.data.responseMessage);
+                    let itemId = response.data.menuItemUniqueId;
+
+                    // Upload Image Now
+                    let formData = new FormData();
+                    formData.append('id', itemId);
+                    formData.append('table', "restaurantMenuTable");
+                    formData.append('selectedFile', addItemState.itemImage);
+                    axios({
+                        method: 'post',
+                        url: 'http://localhost:3001/img/upload ',
+                        data: formData,
+                        config: { headers: { 'Content-Type': 'multipart/form-data' } }
+                    })
+                        .then((response) => {
+                            if (response.status >= 500) {
+                                throw new Error("Bad response from server");
+                            }
+                            console.log(response);
+                            this.setState({
+                                showMenuItemAddModal: false,
+                            })
+                            return response.data;
+                        })
+                        .then((responseData) => {
+                            // alert(responseData.responseMessage);
+                            console.log('Menu Item Image Added');
+                        }).catch(function (err) {
+                            console.log(err)
+                        });
+
+                    // Update all menu items in this component's state.
+                    let anItem = {
+                        itemName: addItemState.itemName,
+                        itemDesc: addItemState.itemDesc,
+                        itemImage: addItemState.itemImage,
+                        itemPrice: addItemState.itemPrice,
+                        itemSection: addItemState.itemSection,
+                    }
+
+                    this.setState({
+                        items: this.state.items.concat(anItem),
+                        showMenuItemAddModal: false,
+                    })
+
+                    // refresh state with existing items
+                    axios.get('http://localhost:3001/menu', {
+                        params: {
+                            restaurantId: restaurantId
+                        }
+                    })
+                        .then(response => {
+                            if (response.status === 200) {
+                                console.log('response from DB: ');
+                                console.log(response.data);
+                                menu.push(...response.data.menu);
+                                sections.push(...response.data.sections);
+                            } else {
+                                console.log("Status Code: ", response.status);
+                                console.log(response.data.responseMessage);
+                            }
+                            this.setState({
+                                items: menu,
+                                sections: sections,
+
+                            })
+                        }).catch(error => {
+                            console.log(error);
+                        });
+                } else {
+                    console.log("Status Code: ", response.status);
+                    console.log(response.data.responseMessage);
+                }
+            }).catch(error => {
+                console.log(error);
                 this.setState({
                     showMenuItemAddModal: false,
                 })
-            }).catch(error => {
-                console.log(error);
-            });
-
-        console.log("Getting details of restaurant with ID: " + restaurantEmailId);
-        this.props.mutate({ variables: data })
-            .then(response => {
-                console.log("response from grapQL for getMenu")
-                console.log(response);
-                let sections = response.data.getMenu.lists;
-                this.setState({
-                    sections: sections,
-                })
-            }).catch(error => {
-                console.log(error);
             });
     }
 
     render() {
-        console.log(this.state);
-        // return (<div/>)
         let MenuSectionsDOM = [];
-        let sectionIndex = 0;
+        let index = 0;
         let sections = this.state.sections;
+        let allItems = this.state.items;
         console.log('printing state of menu-page')
         console.log(this.state);
-        while (sectionIndex < sections.length) {
+        // Go through appetizers first
+        while (index < sections.length) {
             /**
              * For each section
              * find all items that match this sectionName
@@ -297,25 +358,25 @@ export class MenuPage extends Component {
              * add "add items" button at the end
              * add "delete section" button at the end
              */
-            let section = sections[sectionIndex];
-            let allItems = section.items;
-            let sectionName = section.sectionName;
+            let sectionName = sections[index];
             let sectionData = [];
-            for (let index = 0; index < allItems.length; index++) {
+            for (let index = 0; index < allItems.length;) {
                 let threeMenuItemsDOM = [];
-                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++) {
+                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++ , index++) {
                     let anItem = allItems[index];
-                    console.log("creating cards for " + anItem.itemName)
-                    threeMenuItemsDOM.push(
-                        <OwnerMenuItemCard
-                            itemName={anItem.itemName}
-                            itemPrice={anItem.itemPrice}
-                            itemId={anItem.itemId}
-                            itemSection={anItem.itemSection}
-                            itemImage={anItem.itemImg}
-                            deleteItemButtonHandler={this.deleteItemButtonHandler}
-                        />
-                    );
+                    if (anItem.itemSection === sectionName) {
+                        console.log("creating cards for " + anItem.itemName)
+                        threeMenuItemsDOM.push(
+                            <OwnerMenuItemCard
+                                itemName={anItem.itemName}
+                                itemPrice={anItem.itemPrice}
+                                itemId={anItem.itemId}
+                                itemSection={anItem.itemSection}
+                                itemImage={anItem.itemImage}
+                                deleteItemButtonHandler={this.deleteItemButtonHandler}
+                            />
+                        );
+                    }
                 }
                 if (threeMenuItemsDOM.length > 0) {
                     sectionData.push(
@@ -397,6 +458,7 @@ export class MenuPage extends Component {
                     </div>
                 </Row>
             );
+            index = index + 1;
         }
 
         let addSectionDOM = [];
@@ -468,6 +530,4 @@ export class MenuPage extends Component {
 
 
 MenuPage = graphql (getMenuMutation) (MenuPage)
-MenuPage = graphql (addSectionMutation) (MenuPage)
-MenuPage = graphql (addMenuItemMutation) (MenuPage)
-export default MenuPage 
+export default MenuPage

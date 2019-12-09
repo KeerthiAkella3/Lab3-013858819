@@ -52,14 +52,7 @@ const getMenuResult = new GraphQLObjectType({
 const addMenuItemResult = new GraphQLObjectType({
     name: 'addMenuItemResult',
     fields: () => ({
-        status: { type: GraphQLString},
-    })
-})
-
-const addSectionResult = new GraphQLObjectType({
-    name: 'addSectionItemResult',
-    fields: () => ({
-        status: { type: GraphQLString},
+        status: { type: GraphQLInt},
     })
 })
 
@@ -573,7 +566,7 @@ const Mutation = new GraphQLObjectType({
                           }
                           restaurant.markModified("sections");
                           var resultData = {
-                              status: "200",
+                              status: 200,
                             }
                             resolve(resultData);
                         }
@@ -595,38 +588,59 @@ const Mutation = new GraphQLObjectType({
                 sectionName: {
                     type: GraphQLString
                 },
+                itemName: {
+                    type: GraphQLString
+                },
+                itemImg: {
+                    type: GraphQLString
+                },
+                itemDescription: {
+                    type: GraphQLString
+                },
+                itemPrice: {
+                    type: GraphQLString
+                }
             },
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
                     console.log("Adding menu Item");
-                    await Restaurant.findOne({ _id: msg.restaurantId }, function (err, restaurant) {
+                    await Restaurant.findOne({ restaurantEmailId: args.restaurantEmailId}, function (err, restaurant) {
+                        console.log("okayyyyy")
                         if (restaurant) {
-                            var section = {
-                                "sectionName": msg.sectionName,
-                                "items": {}
+                          var item = {
+                            "itemName": args.itemName,
+                            "itemDescription": args.itemDescription,
+                            "itemImg": args.itemImg,
+                            "itemPrice": args.itemPrice,
+                          }
+                    
+                          let sectionIndex = 0;
+                          let sectionsList = restaurant.sections;
+                          for (sectionIndex = 0; sectionIndex < sectionsList.length; sectionIndex++) {
+                              let aSection = sectionsList[sectionIndex];
+                              console.log(aSection)
+                              console.log(aSection.items.length)
+                              if (aSection.sectionName === args.sectionName) {
+                                if (aSection.items === undefined || aSection.items.length === 0|| aSection.items === null || aSection.items === {} || aSection.items.length === undefined) {
+                                  aSection.items = [];
+                                } 
+                                let items = aSection.items;
+                                console.log(items);
+                                items.push(item);
+                              }
+                          }
+                          restaurant.markModified("sections");
+                          var resultData = {
+                              status: 200,
                             }
-                            restaurant.sections.push(section)
-                            restaurant.save()
-                            if (err) {
-                                console.log("unable to insert section into database", err);
-                                let resultData = {
-                                    status: "200",
-                                }
-                                resolve(resultData);
-                            } else {
-                                console.log("section added Successful");
-                                let resultData = {
-                                    status: "500",
-                                }
-                                resolve(resultData);
-                            }
+                            resolve(resultData);
                         }
                         else {
-                        console.log(err);
-                        console.log("section not added")
+                          console.log(err);
+                          console.log("item not added db err")
                         }
+                      })
                     })
-                })
             },
         },
 

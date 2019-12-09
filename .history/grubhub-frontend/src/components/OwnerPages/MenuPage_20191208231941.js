@@ -301,9 +301,9 @@ export class MenuPage extends Component {
             let allItems = section.items;
             let sectionName = section.sectionName;
             let sectionData = [];
-            for (let index = 0; index < allItems.length; index++) {
+            for (let index = 0; index < allItems.length;) {
                 let threeMenuItemsDOM = [];
-                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++) {
+                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++ , index++) {
                     let anItem = allItems[index];
                     console.log("creating cards for " + anItem.itemName)
                     threeMenuItemsDOM.push(
@@ -397,6 +397,7 @@ export class MenuPage extends Component {
                     </div>
                 </Row>
             );
+            index = index + 1;
         }
 
         let addSectionDOM = [];

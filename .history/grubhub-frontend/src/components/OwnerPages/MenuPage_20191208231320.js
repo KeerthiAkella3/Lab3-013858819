@@ -301,21 +301,24 @@ export class MenuPage extends Component {
             let allItems = section.items;
             let sectionName = section.sectionName;
             let sectionData = [];
-            for (let index = 0; index < allItems.length; index++) {
+            for (let index = 0; index < allItems.length;) {
                 let threeMenuItemsDOM = [];
-                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++) {
+                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++ , index++) {
                     let anItem = allItems[index];
-                    console.log("creating cards for " + anItem.itemName)
-                    threeMenuItemsDOM.push(
-                        <OwnerMenuItemCard
-                            itemName={anItem.itemName}
-                            itemPrice={anItem.itemPrice}
-                            itemId={anItem.itemId}
-                            itemSection={anItem.itemSection}
-                            itemImage={anItem.itemImg}
-                            deleteItemButtonHandler={this.deleteItemButtonHandler}
-                        />
-                    );
+
+                    if (anItem.itemSection === sectionName) {
+                        console.log("creating cards for " + anItem.itemName)
+                        threeMenuItemsDOM.push(
+                            <OwnerMenuItemCard
+                                itemName={anItem.itemName}
+                                itemPrice={anItem.itemPrice}
+                                itemId={anItem.itemId}
+                                itemSection={anItem.itemSection}
+                                itemImage={anItem.itemImage}
+                                deleteItemButtonHandler={this.deleteItemButtonHandler}
+                            />
+                        );
+                    }
                 }
                 if (threeMenuItemsDOM.length > 0) {
                     sectionData.push(
@@ -397,6 +400,7 @@ export class MenuPage extends Component {
                     </div>
                 </Row>
             );
+            index = index + 1;
         }
 
         let addSectionDOM = [];

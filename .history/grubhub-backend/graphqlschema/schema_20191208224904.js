@@ -58,7 +58,7 @@ const addMenuItemResult = new GraphQLObjectType({
 
 const addSectionResult = new GraphQLObjectType({
     name: 'addSectionItemResult',
-    fields: () => ({
+    fields: () =< ({
         status: { type: GraphQLString},
     })
 })
@@ -573,7 +573,7 @@ const Mutation = new GraphQLObjectType({
                           }
                           restaurant.markModified("sections");
                           var resultData = {
-                              status: "200",
+                              status: 200,
                             }
                             resolve(resultData);
                         }
@@ -610,13 +610,13 @@ const Mutation = new GraphQLObjectType({
                             if (err) {
                                 console.log("unable to insert section into database", err);
                                 let resultData = {
-                                    status: "200",
+                                    status: 200,
                                 }
                                 resolve(resultData);
                             } else {
                                 console.log("section added Successful");
                                 let resultData = {
-                                    status: "500",
+                                    status: 500,
                                 }
                                 resolve(resultData);
                             }

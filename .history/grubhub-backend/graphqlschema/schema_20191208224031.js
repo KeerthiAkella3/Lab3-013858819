@@ -52,14 +52,7 @@ const getMenuResult = new GraphQLObjectType({
 const addMenuItemResult = new GraphQLObjectType({
     name: 'addMenuItemResult',
     fields: () => ({
-        status: { type: GraphQLString},
-    })
-})
-
-const addSectionResult = new GraphQLObjectType({
-    name: 'addSectionItemResult',
-    fields: () => ({
-        status: { type: GraphQLString},
+        status: { type: GraphQLInt},
     })
 })
 
@@ -573,7 +566,7 @@ const Mutation = new GraphQLObjectType({
                           }
                           restaurant.markModified("sections");
                           var resultData = {
-                              status: "200",
+                              status: 200,
                             }
                             resolve(resultData);
                         }
@@ -599,7 +592,7 @@ const Mutation = new GraphQLObjectType({
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
                     console.log("Adding menu Item");
-                    await Restaurant.findOne({ _id: msg.restaurantId }, function (err, restaurant) {
+                    await   Restaurant.findOne({ _id: msg.restaurantId }, function (err, restaurant) {
                         if (restaurant) {
                             var section = {
                                 "sectionName": msg.sectionName,
@@ -609,16 +602,10 @@ const Mutation = new GraphQLObjectType({
                             restaurant.save()
                             if (err) {
                                 console.log("unable to insert section into database", err);
-                                let resultData = {
-                                    status: "200",
-                                }
-                                resolve(resultData);
+                                callback(err, "Database Error");
                             } else {
                                 console.log("section added Successful");
-                                let resultData = {
-                                    status: "500",
-                                }
-                                resolve(resultData);
+                                callback(null, { status: 200, section });
                             }
                         }
                         else {

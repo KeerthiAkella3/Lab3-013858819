@@ -573,7 +573,7 @@ const Mutation = new GraphQLObjectType({
                           }
                           restaurant.markModified("sections");
                           var resultData = {
-                              status: "200",
+                              status: 200,
                             }
                             resolve(resultData);
                         }
@@ -616,7 +616,7 @@ const Mutation = new GraphQLObjectType({
                             } else {
                                 console.log("section added Successful");
                                 let resultData = {
-                                    status: "500",
+                                    status: 500,
                                 }
                                 resolve(resultData);
                             }

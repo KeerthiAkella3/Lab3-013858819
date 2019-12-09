@@ -285,11 +285,11 @@ export class MenuPage extends Component {
         console.log(this.state);
         // return (<div/>)
         let MenuSectionsDOM = [];
-        let sectionIndex = 0;
+        let index = 0;
         let sections = this.state.sections;
         console.log('printing state of menu-page')
-        console.log(this.state);
-        while (sectionIndex < sections.length) {
+         console.log(this.state);
+        while (index < sections.length) {
             /**
              * For each section
              * find all items that match this sectionName
@@ -297,25 +297,27 @@ export class MenuPage extends Component {
              * add "add items" button at the end
              * add "delete section" button at the end
              */
-            let section = sections[sectionIndex];
-            let allItems = section.items;
-            let sectionName = section.sectionName;
+            let allItems = sections[index].items;
+            let sectionName = sections[index];
             let sectionData = [];
-            for (let index = 0; index < allItems.length; index++) {
+            for (let index = 0; index < allItems.length;) {
                 let threeMenuItemsDOM = [];
-                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++) {
+                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++ , index++) {
                     let anItem = allItems[index];
-                    console.log("creating cards for " + anItem.itemName)
-                    threeMenuItemsDOM.push(
-                        <OwnerMenuItemCard
-                            itemName={anItem.itemName}
-                            itemPrice={anItem.itemPrice}
-                            itemId={anItem.itemId}
-                            itemSection={anItem.itemSection}
-                            itemImage={anItem.itemImg}
-                            deleteItemButtonHandler={this.deleteItemButtonHandler}
-                        />
-                    );
+
+                    if (anItem.itemSection === sectionName) {
+                        console.log("creating cards for " + anItem.itemName)
+                        threeMenuItemsDOM.push(
+                            <OwnerMenuItemCard
+                                itemName={anItem.itemName}
+                                itemPrice={anItem.itemPrice}
+                                itemId={anItem.itemId}
+                                itemSection={anItem.itemSection}
+                                itemImage={anItem.itemImage}
+                                deleteItemButtonHandler={this.deleteItemButtonHandler}
+                            />
+                        );
+                    }
                 }
                 if (threeMenuItemsDOM.length > 0) {
                     sectionData.push(
@@ -397,6 +399,7 @@ export class MenuPage extends Component {
                     </div>
                 </Row>
             );
+            index = index + 1;
         }
 
         let addSectionDOM = [];

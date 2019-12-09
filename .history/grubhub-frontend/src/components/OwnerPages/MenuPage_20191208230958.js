@@ -21,6 +21,7 @@ export class MenuPage extends Component {
 
         this.state = {
             sections: [],
+            items: [],
             restaurantDetails: {},
             restaurantId: 1,
             showMenuItemAddModal: false,
@@ -283,186 +284,189 @@ export class MenuPage extends Component {
 
     render() {
         console.log(this.state);
-        // return (<div/>)
-        let MenuSectionsDOM = [];
-        let sectionIndex = 0;
-        let sections = this.state.sections;
-        console.log('printing state of menu-page')
-        console.log(this.state);
-        while (sectionIndex < sections.length) {
-            /**
-             * For each section
-             * find all items that match this sectionName
-             * add those items under this section
-             * add "add items" button at the end
-             * add "delete section" button at the end
-             */
-            let section = sections[sectionIndex];
-            let allItems = section.items;
-            let sectionName = section.sectionName;
-            let sectionData = [];
-            for (let index = 0; index < allItems.length; index++) {
-                let threeMenuItemsDOM = [];
-                for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++) {
-                    let anItem = allItems[index];
-                    console.log("creating cards for " + anItem.itemName)
-                    threeMenuItemsDOM.push(
-                        <OwnerMenuItemCard
-                            itemName={anItem.itemName}
-                            itemPrice={anItem.itemPrice}
-                            itemId={anItem.itemId}
-                            itemSection={anItem.itemSection}
-                            itemImage={anItem.itemImg}
-                            deleteItemButtonHandler={this.deleteItemButtonHandler}
-                        />
-                    );
-                }
-                if (threeMenuItemsDOM.length > 0) {
-                    sectionData.push(
-                        <Row style={{
-                            width: "inehrit",
-                            height: "inherit",
-                            marginLeft: "5px",
-                        }}>
-                            <CardDeck style={{
-                                flexFlow: 'wrap',
-                                width: '420px',
-                                height: '200px',
-                                flexDirection: 'column',
-                                flexBasis: "auto",
-                            }}>
-                                {threeMenuItemsDOM}
-                            </CardDeck>
-                        </Row>
-                    );
-                }
-            }
+        // let MenuSectionsDOM = [];
+        // let index = 0;
+        // let sections = this.state.sections;
+        // console.log('printing state of menu-page')
+        // console.log(this.state);
+        // // Go through appetizers first
+        // while (index < sections.length) {
+        //     /**
+        //      * For each section
+        //      * find all items that match this sectionName
+        //      * add those items under this section
+        //      * add "add items" button at the end
+        //      * add "delete section" button at the end
+        //      */
+        //     let allItems = sections[index].items;
+        //     let sectionName = sections[index];
+        //     let sectionData = [];
+        //     for (let index = 0; index < allItems.length;) {
+        //         let threeMenuItemsDOM = [];
+        //         for (let curColumn = 0; curColumn < 3 && index < allItems.length; curColumn++ , index++) {
+        //             let anItem = allItems[index];
 
-            // TODO: Add "Add Items Button"
-            sectionData.push(
-                <Button variant="success" size="sm" onClick={(e) => {
-                    this.addItemsButtonHandler(e, sectionName)
-                }}
-                    style={{
-                        width: "250px",
-                        fontSize: "20px",
-                        marginLeft: '5px',
-                        marginTop: '40px',
-                        // paddingTop: '15px'
-                    }}>Add Items to {sectionName} </Button>
+        //             if (anItem.itemSection === sectionName) {
+        //                 console.log("creating cards for " + anItem.itemName)
+        //                 threeMenuItemsDOM.push(
+        //                     <OwnerMenuItemCard
+        //                         itemName={anItem.itemName}
+        //                         itemPrice={anItem.itemPrice}
+        //                         itemId={anItem.itemId}
+        //                         itemSection={anItem.itemSection}
+        //                         itemImage={anItem.itemImage}
+        //                         deleteItemButtonHandler={this.deleteItemButtonHandler}
+        //                     />
+        //                 );
+        //             }
+        //         }
+        //         if (threeMenuItemsDOM.length > 0) {
+        //             sectionData.push(
+        //                 <Row style={{
+        //                     width: "inehrit",
+        //                     height: "inherit",
+        //                     marginLeft: "5px",
+        //                 }}>
+        //                     <CardDeck style={{
+        //                         flexFlow: 'wrap',
+        //                         width: '420px',
+        //                         height: '200px',
+        //                         flexDirection: 'column',
+        //                         flexBasis: "auto",
+        //                     }}>
+        //                         {threeMenuItemsDOM}
+        //                     </CardDeck>
+        //                 </Row>
+        //             );
+        //         }
+        //     }
 
-            )
-            MenuSectionsDOM.push(
-                <Row style={{
-                    marginTop: '5px',
-                    marginBottom: '40px',
-                    boxShadow: "0 0 0 1px rgba(67,41,163,.08), 0 1px 5px 0 rgba(67,41,163,.08)",
-                    borderRadius: "3px",
-                }}>
-                    <div style={{
-                        width: "100%",
-                        height: "100%",
-                        paddingBottom: '5px',
-                        marginTop: '10px'
-                    }}>
-                        <Container style={{
-                            maxWidth: "100%"
-                        }}>
-                            <Row style={{
-                                width: "100%",
-                            }}>
-                                <Col sm={10}>
-                                    <h1 style={{
-                                        fontSize: "30px",
-                                        height: "40px"
-                                    }}>{sectionName}</h1>
-                                </Col>
-                                <Col sm={2}>
-                                    <Button variant="danger" onClick={(e) => {
-                                        this.deleteSectionButtonHandler(e, sectionName)
-                                    }} style={{
-                                        width: "175px",
-                                        fontSize: "20px",
-                                    }}>Delete Section</Button>
-                                </Col>
-                            </Row>
-                        </Container>
-                    </div>
-                    <div style={{
-                        width: '100%',
-                        height: '100%',
-                        paddingBottom: '20px',
-                    }}>
-                        {sectionData}
-                    </div>
-                </Row>
-            );
-        }
+        //     // TODO: Add "Add Items Button"
+        //     sectionData.push(
+        //         <Button variant="success" size="sm" onClick={(e) => {
+        //             this.addItemsButtonHandler(e, sectionName)
+        //         }}
+        //             style={{
+        //                 width: "250px",
+        //                 fontSize: "20px",
+        //                 marginLeft: '5px',
+        //                 marginTop: '40px',
+        //                 // paddingTop: '15px'
+        //             }}>Add Items to {sectionName} </Button>
 
-        let addSectionDOM = [];
-        addSectionDOM.push(
-            <div style={{
-                width: "100%",
-                height: "100%",
-                paddingBottom: '5px',
-                marginTop: '10px'
-            }}>
-                <Container style={{
-                    maxWidth: "100%"
-                }}>
-                    <Row style={{
-                        width: "100%",
-                    }}>
-                        <Col sm={5}></Col>
-                        <Col sm={2}>
-                            <Button variant="success" onClick={(e) => {
-                                this.addSectionButtonHandler()
-                            }} style={{
-                                width: "175px",
-                                fontSize: "20px",
-                            }}>Add Section</Button></Col>
-                        <Col sm={5}></Col>
+        //     )
+        //     MenuSectionsDOM.push(
+        //         <Row style={{
+        //             marginTop: '5px',
+        //             marginBottom: '40px',
+        //             boxShadow: "0 0 0 1px rgba(67,41,163,.08), 0 1px 5px 0 rgba(67,41,163,.08)",
+        //             borderRadius: "3px",
+        //         }}>
+        //             <div style={{
+        //                 width: "100%",
+        //                 height: "100%",
+        //                 paddingBottom: '5px',
+        //                 marginTop: '10px'
+        //             }}>
+        //                 <Container style={{
+        //                     maxWidth: "100%"
+        //                 }}>
+        //                     <Row style={{
+        //                         width: "100%",
+        //                     }}>
+        //                         <Col sm={10}>
+        //                             <h1 style={{
+        //                                 fontSize: "30px",
+        //                                 height: "40px"
+        //                             }}>{sectionName}</h1>
+        //                         </Col>
+        //                         <Col sm={2}>
+        //                             <Button variant="danger" onClick={(e) => {
+        //                                 this.deleteSectionButtonHandler(e, sectionName)
+        //                             }} style={{
+        //                                 width: "175px",
+        //                                 fontSize: "20px",
+        //                             }}>Delete Section</Button>
+        //                         </Col>
+        //                     </Row>
+        //                 </Container>
+        //             </div>
+        //             <div style={{
+        //                 width: '100%',
+        //                 height: '100%',
+        //                 paddingBottom: '20px',
+        //             }}>
+        //                 {sectionData}
+        //             </div>
+        //         </Row>
+        //     );
+        //     index = index + 1;
+        // }
 
-                    </Row>
-                </Container>
-            </div>
-        );
-        let MenuItemAddModalDOM = [];
-        if (this.state.showMenuItemAddModal) {
-            MenuItemAddModalDOM = <MenuItemAddModal
-                onClose={this.closeMenuItemAddModal}
-                onSave={this.saveMenuItemAddModal}
-                sectionName={this.state.itemAddModalSection}
-            />;
-        }
+        // let addSectionDOM = [];
+        // addSectionDOM.push(
+        //     <div style={{
+        //         width: "100%",
+        //         height: "100%",
+        //         paddingBottom: '5px',
+        //         marginTop: '10px'
+        //     }}>
+        //         <Container style={{
+        //             maxWidth: "100%"
+        //         }}>
+        //             <Row style={{
+        //                 width: "100%",
+        //             }}>
+        //                 <Col sm={5}></Col>
+        //                 <Col sm={2}>
+        //                     <Button variant="success" onClick={(e) => {
+        //                         this.addSectionButtonHandler()
+        //                     }} style={{
+        //                         width: "175px",
+        //                         fontSize: "20px",
+        //                     }}>Add Section</Button></Col>
+        //                 <Col sm={5}></Col>
 
-        let MenuSectionAddModalDOM = [];
-        if (this.state.showMenuSectionAddModal) {
-            MenuSectionAddModalDOM = <MenuSectionAddModal
-                onClose={this.closeSectionAddModal}
-                onSave={this.saveSectionAddModal}
-            />;
-        }
+        //             </Row>
+        //         </Container>
+        //     </div>
+        // );
+        // let MenuItemAddModalDOM = [];
+        // if (this.state.showMenuItemAddModal) {
+        //     MenuItemAddModalDOM = <MenuItemAddModal
+        //         onClose={this.closeMenuItemAddModal}
+        //         onSave={this.saveMenuItemAddModal}
+        //         sectionName={this.state.itemAddModalSection}
+        //     />;
+        // }
 
-        return (
-            <div style={{
-                width: "100%",
-                height: "100%",
-                backgroundColor: "inherit",
-            }}>
-                {/* <p>THIS IS MENU PAGE</p>  */}
-                <Container style={{
-                    width: "100%",
-                    height: "100%",
-                    maxWidth: "100%",
-                }}>
-                    {MenuSectionsDOM}
-                    {addSectionDOM}
-                    {MenuItemAddModalDOM}
-                    {MenuSectionAddModalDOM}
-                </Container>
-            </div>
-        )
+        // let MenuSectionAddModalDOM = [];
+        // if (this.state.showMenuSectionAddModal) {
+        //     MenuSectionAddModalDOM = <MenuSectionAddModal
+        //         onClose={this.closeSectionAddModal}
+        //         onSave={this.saveSectionAddModal}
+        //     />;
+        // }
+
+        // return (
+        //     <div style={{
+        //         width: "100%",
+        //         height: "100%",
+        //         backgroundColor: "inherit",
+        //     }}>
+        //         {/* <p>THIS IS MENU PAGE</p>  */}
+        //         <Container style={{
+        //             width: "100%",
+        //             height: "100%",
+        //             maxWidth: "100%",
+        //         }}>
+        //             {MenuSectionsDOM}
+        //             {addSectionDOM}
+        //             {MenuItemAddModalDOM}
+        //             {MenuSectionAddModalDOM}
+        //         </Container>
+        //     </div>
+        // )
     }
 }
 
