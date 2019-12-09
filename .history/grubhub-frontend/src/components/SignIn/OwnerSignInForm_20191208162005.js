@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 
 import { graphql } from "react-apollo";
-import { ownerLoginMutation } from '../../Mutations/SignupLoginProfileMutations';
+import { ownerLoginMutation } from '../../mutations/signupLoginProfilemutations';
 
 
 
@@ -52,29 +52,32 @@ class OwnerSignInForm extends Component {
         console.log(data);
         this.props.mutate({ variables: data })
             .then(res => {
-                console.log("Status Code : ", res.status);
+                console.log("Status Code : ", response.status);
                 console.log("Response from Sign Up " + res);
                 console.log(res);
-                localStorage.setItem("userId", res.data.ownerLogin.userId);
-                localStorage.setItem("name", res.data.ownerLogin.name);
-                localStorage.setItem("email", res.data.ownerLogin.email);
-              
-                if (!res.data.ownerLogin.isValidUser) {
-                    this.setState({
-                        SignedUpFlag: false,
-                        message: "Invalid Credentials"
-                       
-                    })
-                }
-                else {
+                localStorage.setItem("cookie1", res.data.login.cookie1);
+                localStorage.setItem("cookie2", res.data.login.cookie2);
+                localStorage.setItem("cookie3", res.data.login.cookie3);
+                localStorage.setItem("cookie4", res.data.login.cookie4);
+                if (!res.data.login.isValidUser) {
                     this.setState({
                         SignedUpFlag: true,
                         message: "Owner Logged in successfully"
                     })
                 }
+                else {
+                    this.setState({
+                        SignedUpFlag: true,
+                        message: "Invalid Credentials"
+                    })
+                }
+
+
+
             }).catch(err => {
                 console.log(err);
             });
+
     }
 
     render() {
@@ -118,22 +121,18 @@ class OwnerSignInForm extends Component {
                         </center>
                     </Card>
                 </center>
+                {/* <div className="form-style-2-heading">Login as Retaurent Owner</div>
+                <form>
+                    
+                    <label htmlFor="field2"><span>E-Mail ID<span className="required" >*</span></span><input type="text" className="input-field" name="restaurantEmailId" onChange={this.emailIdChangeHandler} /></label><br />
+                    <label htmlFor="field2"><span>Password<span className="required">*</span></span><input type="text" className="input-field" name="restaurantPassword" onChange={this.passwordChangeHandler} /></label><br />
+                    
+                    <label><input type="submit" onClick={this.submitOwnerLogin} /></label>
+
+                </form> */}
             </div>
         )
     }
 }
-
-
-
-const loginqueryoptions = {
-    options: props => ({
-      variables: {
-        "email": this.state.data.email,
-        "password": this.state.data.password
-      },
-    }),
-  }
-
-  OwnerSignInForm = graphql (ownerLoginMutation) (OwnerSignInForm)
 
 export default OwnerSignInForm

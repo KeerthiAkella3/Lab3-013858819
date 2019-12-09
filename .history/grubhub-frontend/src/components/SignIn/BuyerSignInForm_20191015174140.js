@@ -6,10 +6,6 @@ import { Redirect } from 'react-router'
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
-import { graphql } from "react-apollo";
-
-import { buyerLoginMutation } from '../../Mutations/SignupLoginProfileMutations.js';
-
 
 class BuyerSignInForm extends Component {
 
@@ -47,30 +43,23 @@ class BuyerSignInForm extends Component {
         console.log("data is..")
         console.log(data);
         e.preventDefault();
-        this.props.mutate({ variables: data })
-            .then(res => {
-                console.log("Status Code : ", res.status);
-                console.log("Response from Sign Up " + res);
-                console.log(res);
-                localStorage.setItem("userId", res.data.buyerLogin.userId);
-                localStorage.setItem("name", res.data.buyerLogin.name);
-                localStorage.setItem("email", res.data.buyerLogin.email);
-              
-                if (!res.data.buyerLogin.isValidUser) {
+        axios.defaults.withCredentials = true;
+        axios.post('http://localhost:3001/buyerSignIn', data)
+            .then(response => {
+                console.log("Status Code : ", response.status);
+                console.log("Response from Sign Up " + response);
+                console.log(response);
+                if (response.data.validUser === true) {
+                    this.setState({
+                        SignedUpFlag: true,
+                        message: "Buyer Logged in successfully"
+                    })
+                } else {
                     this.setState({
                         SignedUpFlag: false,
                         message: "Invalid Credentials"
                     })
                 }
-                else {
-                    this.setState({
-                        SignedUpFlag: true,
-                        message: "buyer Logged in successfully"
-                        
-                    })
-                }
-            }).catch(err => {
-                console.log(err);
             });
     }
 
@@ -116,7 +105,5 @@ class BuyerSignInForm extends Component {
         )
     }
 }
-
-BuyerSignInForm = graphql (buyerLoginMutation) (BuyerSignInForm)
 
 export default BuyerSignInForm

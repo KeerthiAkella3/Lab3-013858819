@@ -2,74 +2,66 @@ import React, { Component } from 'react'
 import 'filepond/dist/filepond.min.css';
 import axios from 'axios';
 import { Redirect } from 'react-router'
-//import ownerSignIn from './ownerSignIn';
 
 import Form from 'react-bootstrap/Form'
 import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 
-import { graphql } from "react-apollo";
-import { ownerLoginMutation } from '../../Mutations/SignupLoginProfileMutations';
-
-
-
-class OwnerSignInForm extends Component {
+class BuyerSignInForm extends Component {
 
     constructor(props) {
         super(props)
         this.state = {
-            restaurantEmailId: "",
-            restaurantPassword: "",
-            SignedUpFlag: false
+            buyerEmailId: "",
+            buyerPassword: "",
+            SignedUpFlag: false,
+            message: "",
         }
 
-
-        this.emailIdChangeHandler = this.emailIdChangeHandler.bind(this)
-        this.passwordChangeHandler = this.passwordChangeHandler.bind(this)
-
-        this.submitOwnerLogin = this.submitOwnerLogin.bind(this)
+        this.buyerEmailIdChangeHandler = this.buyerEmailIdChangeHandler.bind(this)
+        this.buyerPasswordChangeHandler = this.buyerPasswordChangeHandler.bind(this)
+        this.submitBuyerLogin = this.submitBuyerLogin.bind(this)
     }
 
-    emailIdChangeHandler = (e) => {
+    buyerEmailIdChangeHandler = (e) => {
         this.setState({
-            restaurantEmailId: e.target.value
+            buyerEmailId: e.target.value
         })
     }
-    passwordChangeHandler = (e) => {
+    buyerPasswordChangeHandler = (e) => {
         this.setState({
-            restaurantPassword: e.target.value
+            buyerPassword: e.target.value
         })
     }
 
-    submitOwnerLogin = (e) => {
+    submitBuyerLogin = (e) => {
         console.log("in submit Login")
-        e.preventDefault();
         const data = {
-            restaurantEmailId: this.state.restaurantEmailId,
-            restaurantPassword: this.state.restaurantPassword
+            buyerEmailId: this.state.buyerEmailId,
+            buyerPassword: this.state.buyerPassword
         }
         console.log("data is..")
         console.log(data);
+        e.preventDefault();
         this.props.mutate({ variables: data })
             .then(res => {
-                console.log("Status Code : ", res.status);
+                console.log("Status Code : ", response.status);
                 console.log("Response from Sign Up " + res);
                 console.log(res);
-                localStorage.setItem("userId", res.data.ownerLogin.userId);
-                localStorage.setItem("name", res.data.ownerLogin.name);
-                localStorage.setItem("email", res.data.ownerLogin.email);
+                localStorage.setItem("userId", res.data.login.userId);
+                localStorage.setItem("name", res.data.login.name);
+                localStorage.setItem("email", res.data.login.email);
               
-                if (!res.data.ownerLogin.isValidUser) {
+                if (!res.data.login.isValidUser) {
                     this.setState({
-                        SignedUpFlag: false,
-                        message: "Invalid Credentials"
-                       
+                        SignedUpFlag: true,
+                        message: "buyer Logged in successfully"
                     })
                 }
                 else {
                     this.setState({
-                        SignedUpFlag: true,
-                        message: "Owner Logged in successfully"
+                        SignedUpFlag: false,
+                        message: "Invalid Credentials"
                     })
                 }
             }).catch(err => {
@@ -78,18 +70,15 @@ class OwnerSignInForm extends Component {
     }
 
     render() {
-        var nextpage = null
         if (this.state.SignedUpFlag === true) {
-            nextpage = <Redirect to="/OwnerHomePage" />
+            return <Redirect to="/BuyerHomePage" />
         }
         return (
             <div>
-                {nextpage}
                 <br></br>
                 <br></br>
                 <br></br>
                 <br></br>
-
                 <center>
                     <Card style={{ width: '22rem' }}>
                         <br></br>
@@ -99,19 +88,19 @@ class OwnerSignInForm extends Component {
                             <Form style={{ width: '18rem' }}>
                                 <Form.Group controlId="formBasicEmail">
                                     <Form.Label>Email address</Form.Label>
-                                    <Form.Control type="email" placeholder="Enter email" required name="restaurantEmailId" onChange={this.emailIdChangeHandler} />
+                                    <Form.Control type="email" placeholder="Enter email" required name="buyerEmailId" onChange={this.buyerEmailIdChangeHandler} />
                                 </Form.Group>
 
                                 <Form.Group controlId="formBasicPassword">
                                     <Form.Label>Password</Form.Label>
-                                    <Form.Control type="password" placeholder="Password" required name="restaurantPassword" onChange={this.passwordChangeHandler} />
+                                    <Form.Control type="password" placeholder="Password" required name="buyerPassword" onChange={this.buyerPasswordChangeHandler} />
                                 </Form.Group>
                                 <Form.Text variant="danger">
                                     {this.state.message}
                                 </Form.Text>
-                                <Button variant="danger" type="submit" onClick={this.submitOwnerLogin}>
+                                <Button variant="danger" type="submit" onClick={this.submitBuyerLogin}>
                                     Sign in
-                    </Button>
+                                </Button>
                                 <br></br>
                             </Form>
                             <br></br>
@@ -123,17 +112,6 @@ class OwnerSignInForm extends Component {
     }
 }
 
+BuyerSignInForm = graphql (buyerLoginMutation) (BuyerSignInForm)
 
-
-const loginqueryoptions = {
-    options: props => ({
-      variables: {
-        "email": this.state.data.email,
-        "password": this.state.data.password
-      },
-    }),
-  }
-
-  OwnerSignInForm = graphql (ownerLoginMutation) (OwnerSignInForm)
-
-export default OwnerSignInForm
+export default BuyerSignInForm

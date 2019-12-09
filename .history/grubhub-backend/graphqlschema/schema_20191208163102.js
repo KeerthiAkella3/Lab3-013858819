@@ -317,7 +317,7 @@ const Mutation = new GraphQLObjectType({
             },
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
-                    console.log("Inside Owner Login Mutation");
+                    console.log("Inside Login Mutation");
                     var userData = {
                         isValidUser: false,
                         userId: null,
@@ -329,7 +329,7 @@ const Mutation = new GraphQLObjectType({
                         "buyerPassword": sha1(args.buyerPassword)
                     }, (err, user) => {
                         if (err) {
-                            console.log("Error while querying buyer info:", err);
+                            console.log("Error while querying user info:", err);
                         }
                         else {
                             if (user) {
@@ -337,9 +337,10 @@ const Mutation = new GraphQLObjectType({
                                 //let cookies = {"cookie1": user.role, "cookie2": user._id, "cookie3": user.firstname+" "+user.lastname, "cookie4": user.email };
                                 userData = {
                                     isValidUser: true,
-                                    userId: user._id,
-                                    name: user.buyerName,
-                                    email: user.buyerEmailId
+                                    cookie1: user.role,
+                                    cookie2: user._id,
+                                    cookie3: user.firstname + " " + user.lastname,
+                                    cookie4: user.email
                                 };
                             }
                         }

@@ -317,7 +317,7 @@ const Mutation = new GraphQLObjectType({
             },
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
-                    console.log("Inside Owner Login Mutation");
+                    console.log("Inside Login Mutation");
                     var userData = {
                         isValidUser: false,
                         userId: null,

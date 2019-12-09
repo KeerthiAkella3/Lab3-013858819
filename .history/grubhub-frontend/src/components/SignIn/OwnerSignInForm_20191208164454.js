@@ -55,11 +55,11 @@ class OwnerSignInForm extends Component {
                 console.log("Status Code : ", res.status);
                 console.log("Response from Sign Up " + res);
                 console.log(res);
-                localStorage.setItem("userId", res.data.ownerLogin.userId);
-                localStorage.setItem("name", res.data.ownerLogin.name);
-                localStorage.setItem("email", res.data.ownerLogin.email);
+                localStorage.setItem("userId", res.ownerLogin.login.userId);
+                localStorage.setItem("name", res.ownerLogin.login.name);
+                localStorage.setItem("email", res.ownerLogin.login.email);
               
-                if (!res.data.ownerLogin.isValidUser) {
+                if (!res.ownerLogin.login.isValidUser) {
                     this.setState({
                         SignedUpFlag: false,
                         message: "Invalid Credentials"

@@ -42,7 +42,7 @@ mutation buyerLogin(
     $buyerPassword: String!) {
     buyerLogin(
         buyerEmailId: $buyerEmailId,
-        buyerPassword: $buyerPassword
+        buyerPassword: $buyerPassword,
         ) {
         isValidUser,
         isValidUser,
@@ -66,6 +66,9 @@ mutation ownerLogin(
         email
     }
 }
+`;
+
+
 `;
 
 const buyerUpdateProfileMutation = gql`

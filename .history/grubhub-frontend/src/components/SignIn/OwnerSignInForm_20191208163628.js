@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/Button'
 import Card from 'react-bootstrap/Card'
 
 import { graphql } from "react-apollo";
-import { ownerLoginMutation } from '../../Mutations/SignupLoginProfileMutations';
+import { ownerLoginMutation } from '../../mutations/signupLoginProfilemutations';
 
 
 
@@ -55,21 +55,20 @@ class OwnerSignInForm extends Component {
                 console.log("Status Code : ", res.status);
                 console.log("Response from Sign Up " + res);
                 console.log(res);
-                localStorage.setItem("userId", res.data.ownerLogin.userId);
-                localStorage.setItem("name", res.data.ownerLogin.name);
-                localStorage.setItem("email", res.data.ownerLogin.email);
+                localStorage.setItem("userId", res.data.login.userId);
+                localStorage.setItem("name", res.data.login.name);
+                localStorage.setItem("email", res.data.login.email);
               
-                if (!res.data.ownerLogin.isValidUser) {
+                if (!res.data.login.isValidUser) {
                     this.setState({
-                        SignedUpFlag: false,
-                        message: "Invalid Credentials"
-                       
+                        SignedUpFlag: true,
+                        message: "Owner Logged in successfully"
                     })
                 }
                 else {
                     this.setState({
-                        SignedUpFlag: true,
-                        message: "Owner Logged in successfully"
+                        SignedUpFlag: false,
+                        message: "Invalid Credentials"
                     })
                 }
             }).catch(err => {

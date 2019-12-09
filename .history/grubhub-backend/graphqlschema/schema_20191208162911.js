@@ -305,31 +305,36 @@ const Mutation = new GraphQLObjectType({
 
         },
 
-        buyerLogin: {
+        login: {
             type: loggedInUserData,
             args: {
-                buyerEmailId: {
+                email: {
                     type: GraphQLString
                 },
-                buyerPassword: {
+                password: {
+                    type: GraphQLString
+                },
+                role: {
                     type: GraphQLString
                 }
             },
             resolve: (parent, args) => {
                 return new Promise(async (resolve, reject) => {
-                    console.log("Inside Owner Login Mutation");
+                    console.log("Inside Login Mutation");
                     var userData = {
                         isValidUser: false,
-                        userId: null,
-                        name: null,
-                        email: null
+                        cookie1: null,
+                        cookie2: null,
+                        cookie3: null,
+                        cookie4: null
                     };
                     await UserModel.findOne({
-                        "buyerEmailId": args.buyerEmailId,
-                        "buyerPassword": sha1(args.buyerPassword)
+                        "email": args.email,
+                        "password": sha1(args.password),
+                        "role": args.role
                     }, (err, user) => {
                         if (err) {
-                            console.log("Error while querying buyer info:", err);
+                            console.log("Error while querying user info:", err);
                         }
                         else {
                             if (user) {
@@ -337,9 +342,10 @@ const Mutation = new GraphQLObjectType({
                                 //let cookies = {"cookie1": user.role, "cookie2": user._id, "cookie3": user.firstname+" "+user.lastname, "cookie4": user.email };
                                 userData = {
                                     isValidUser: true,
-                                    userId: user._id,
-                                    name: user.buyerName,
-                                    email: user.buyerEmailId
+                                    cookie1: user.role,
+                                    cookie2: user._id,
+                                    cookie3: user.firstname + " " + user.lastname,
+                                    cookie4: user.email
                                 };
                             }
                         }
